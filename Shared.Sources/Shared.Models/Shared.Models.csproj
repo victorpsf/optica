@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Service.Modules\Authentication\" />
-    <Folder Include="Service.Modules\Enterprises\" />
-    <Folder Include="Service.Modules\Financial\" />
+    <Folder Include="Service\Modules\Authentication\" />
+    <Folder Include="Service\Modules\Enterprises\" />
+    <Folder Include="Service\Modules\Financial\" />
   </ItemGroup>
 
   <ItemGroup>

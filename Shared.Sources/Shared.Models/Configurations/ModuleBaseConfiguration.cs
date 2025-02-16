@@ -16,6 +16,4 @@ public class ModuleBaseConfiguration: IModuleBaseConfiguration
         this.Manager = manager;
         this.Security = security;
     }
-    
-    public string ConnectionString { get => string.Empty; }
 }

@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shared.Interfaces\Shared.Interfaces.csproj" />
     <ProjectReference Include="..\Shared.Libraries\Shared.Libraries.csproj" />
+    <ProjectReference Include="..\Shared.Models\Shared.Models.csproj" />
   </ItemGroup>
 
 </Project>
