@@ -4,12 +4,13 @@ using Shared.Databases.DbContexts;
 using Shared.Databases.Entities;
 using Shared.Extensions;
 using Shared.Interfaces.Databases;
+using Shared.Libraries;
 
 namespace Shared.Databases.Services;
 
-public class AuthenticationService: AbstractService<AuthenticationDbContext, User>, IAuthenticationService
+public class UserService: AbstractService<AuthenticationDbContext, User>, IUserService
 {
-    public AuthenticationService(AuthenticationDbContext context): base(context, context.Users) { }
+    public UserService(AuthenticationDbContext context): base(context, context.Users) { }
 
     public User? FindById(long id)
         => this.DbSet.AsQueryable()

@@ -24,14 +24,13 @@ public class SmtpService
         => new(address);
 
     private SmtpClient CreateClient()
-        => new SmtpClient
-        {
-            Host = this._configuration.Host,
-            Port = this._configuration.Port,
-            UseDefaultCredentials = false,
-            Credentials = GetNetworkCredential(),
-            EnableSsl = this._configuration.UseSsl
-        };
+    {
+        var client = new SmtpClient(this._configuration.Host, this._configuration.Port);
+        client.UseDefaultCredentials = false;
+        client.Credentials = GetNetworkCredential();
+        client.EnableSsl = this._configuration.UseSsl;
+        return client;
+    }
 
     private MailMessage CreateMailMessage(SmtpMessageModel model)
     {
@@ -48,30 +47,41 @@ public class SmtpService
     
     public Task SendAsync(SmtpMessageModel model)
     {
-        var client = this.CreateClient();
-        var message = this.CreateMailMessage(model);
+        try
+        {
+            var client = this.CreateClient();
+            var message = this.CreateMailMessage(model);
         
-        message.Subject = model.Subject;
-        message.SubjectEncoding = Encoding.UTF8;
-        message.Body = model.Message;
-        message.BodyEncoding = Encoding.UTF8;
-        message.IsBodyHtml = model.IsHtml;
+            message.Subject = model.Subject;
+            message.SubjectEncoding = Encoding.UTF8;
+            message.Body = model.Message;
+            message.BodyEncoding = Encoding.UTF8;
+            message.IsBodyHtml = model.IsHtml;
+
+            client.Send(message);
+        }
         
-        client.Send(message);
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
+        
         return Task.CompletedTask;
     }
     
     public void Send(SmtpMessageModel model)
     {
-        var client = this.CreateClient();
-        var message = this.CreateMailMessage(model);
+        try
+        {
+            var client = this.CreateClient();
+            var message = this.CreateMailMessage(model);
         
-        message.Subject = model.Subject;
-        message.SubjectEncoding = Encoding.UTF8;
-        message.Body = model.Message;
-        message.BodyEncoding = Encoding.UTF8;
-        message.IsBodyHtml = model.IsHtml;
+            message.Subject = model.Subject;
+            message.SubjectEncoding = Encoding.UTF8;
+            message.Body = model.Message;
+            message.BodyEncoding = Encoding.UTF8;
+            message.IsBodyHtml = model.IsHtml;
         
-        client.Send(message);
+            client.Send(message);
+        }
+        
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
     }
 }

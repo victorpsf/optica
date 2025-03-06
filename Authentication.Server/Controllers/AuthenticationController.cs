@@ -1,55 +1,107 @@
-﻿using Authentication.Server.Requests;
+﻿using Authentication.Server.Controllers.Requests;
+using Authentication.Server.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Databases.Entities;
+using Shared.Dtos;
+using Shared.Extensions;
 using Shared.Interfaces.Configurations;
 using Shared.Interfaces.Databases;
 using Shared.Libraries;
 using Shared.Models.Security;
 using Shared.Security;
+using Shared.Services;
 
 namespace Authentication.Server;
 
 [AllowAnonymous]
-public class AuthenticationController: ControllerBase
+public partial class AuthenticationController: ControllerBase
 {
     private ISecurityConfiguration securityConfiguration;
-    private IAuthenticationService service;
+    private IUserService service;
+    private IAuthCodeService authCodeService;
+    private SmtpService smtpService;
+    private HostCache hostCache;
 
     public AuthenticationController(
         ISecurityConfiguration securityConfiguration,
-        IAuthenticationService service
+        IUserService service,
+        IAuthCodeService authCodeService,
+        SmtpService smtpService,
+        HostCache hostCache
     ) {
         this.service = service;
         this.securityConfiguration = securityConfiguration;
+        this.authCodeService = authCodeService;
+        this.smtpService = smtpService;
+        this.hostCache = hostCache;
     }
 
     [HttpPost]
-    public IActionResult Index(
+    public async Task<IActionResult> Index(
         [FromBody] Autentication autentication
     )
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-
+        
         var user = this.service.FindByEmailOrName(
             autentication.Email,
             autentication.Name is null ? null : Hash.Create(HashCipherMode.SHA512).Update(autentication.Name).toBase64String()
         );
-        
-        if (user is null || !user.Active)
-            return BadRequest();
 
+        
+        if (user is null || !user.Active) return BadRequest(new EmptyResponseDto() { Message = "Credenciais inválidas" });
+        
         var valid = Pbkdf2.Create(Pbkdf2Size._8192, Pbkdf2HashDerivation.HMACSHA512)
             .Verify(Binary.FromBase64(user.Password ?? string.Empty).Bytes, Binary.FromString(autentication.Password ?? string.Empty).Bytes);
         
-        if (!valid)
-            return BadRequest();
-        
+        if (!valid) return BadRequest(new EmptyResponseDto() { Message = "Credenciais inválidas" });
+
+        var code = this.authCodeService.Create(user);
+#if RELEASE
+        await this.SendTryLogin(user, code);
+#endif
+        this.hostCache.Set("try:login", user, 480);
+
+#if DEBUG
+        return Ok(new EmptyResponseDto() { Message = code.Code });
+#elif RELEASE 
+        return Ok(new EmptyResponseDto() { Message = "Código de autenticação enviado" });
+#endif
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Code(
+        [FromBody] AuthenticationCode authentication
+    )
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var user = this.hostCache.Get<User>("try:login");
+        if (user is null)
+            return BadRequest(
+                new EmptyResponseDto() { 
+                    Message = "Tentativa de login inválida"
+                }
+            );
+
+
+        var code = this.authCodeService.Create(user);
+        if (authentication.Code != code.Code)
+            return BadRequest(
+                new EmptyResponseDto()
+                {
+                    Message = "Código informado inválido"
+                }
+            );
+        this.hostCache.Unset("try:login");
+        this.authCodeService.Delete(user);
+
         return Ok(
-            Jwt.Create(securityConfiguration).Write(new ClaimIdentifier()
-            {
-                UserId = user.Id
-            })
+            Jwt.Create(securityConfiguration)
+                .Write(new ClaimIdentifier() { UserId = user.Id ?? 0 })
         );
     }
 }

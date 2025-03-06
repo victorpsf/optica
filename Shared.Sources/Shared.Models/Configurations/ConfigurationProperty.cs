@@ -26,10 +26,15 @@ public class ConfigurationProperty: IConfigurationProperty
         switch (this.Value?.ToUpperInvariant())
         {
             case "TRUE": return true;
+            case "FALSE": return false;
             case "SIM": return true;
+            case "NÂO": return false;
             case "YES": return true;
+            case "NO": return false;
             case "1": return true;
+            case "0": return false;
             case "S": return true;
+            case "N": return false;
             default: return defaultValue;
         }
     }

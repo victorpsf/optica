@@ -1,11 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+﻿namespace Shared.Dtos;
 
-namespace Shared.Databases.Entities;
-
-[Table(name: "users", Schema = "public")]
-public class User
+public class UserDto
 {
     public int? Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -15,6 +10,4 @@ public class User
     public bool ForcePasswordReset { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
-    [JsonIgnore]
-    public Collection<AuthCode> AuthCodes { get; set; }
 }

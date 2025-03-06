@@ -5,13 +5,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shared.Extensions;
+using Shared.Interfaces.Services;
 using Shared.Libraries;
 using Shared.Middleware;
 using Shared.Models.Annotation;
+using Shared.Models.Configurations;
 using Shared.Models.Security;
 using Shared.Models.Service.Modules;
 using Shared.Security;
+using Shared.Services;
 using Shared.Services.Factory;
+using Shared.Models.Service;
 
 namespace Shared.Configuration;
 
@@ -33,12 +37,23 @@ public partial class StartupCoreConfiguration
         services.AddAuthentication();
         services.AddAuthorization();
         services.AddHttpContextAccessor();
+        
 
         // SECURITY CHANEL CONFIGURATION
         // AS CHAMADAS ENTRE SEVIÇO VÃO UTILIZAR RSA
         var securityChanels = new SecurityChanelConnections(RsaCryptographySize._2048);
+        var temporaryCache = new AppHostTemporaryCache();
+        var smtpConfiguration = SmtpConfiguration.GetConfiguration(this.Configuration);
+
         services.AddSingleton(securityChanels);
+        services.AddSingleton(temporaryCache);
+        services.AddSingleton<SmtpService>(new SmtpService(smtpConfiguration));
+        services.AddScoped<HostCache>();
+
         JobFactory.CreateJob(() => securityChanels.RemoveChanels(DateTime.UtcNow), 3600000);
+        JobFactory.CreateJob(() => temporaryCache.UnsetValue(), 10000);
+
+        services.AddScoped<IHostCache, HostCache>();
 
         this.ConfigureModule(services);
     }

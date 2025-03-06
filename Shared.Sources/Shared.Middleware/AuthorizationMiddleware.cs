@@ -8,11 +8,11 @@ namespace Shared.Middleware;
 public class AuthorizationMiddleware: AuthorizationHandler<AuthorizationRequirements>
 {
     private readonly AuthenticatedUser _authenticatedUser;
-    private readonly IAuthenticationService authenticationService;
+    private readonly IUserService _userService;
     
-    public AuthorizationMiddleware (IAuthenticationService authenticationService, AuthenticatedUser authenticatedUser) {
+    public AuthorizationMiddleware (IUserService userService, AuthenticatedUser authenticatedUser) {
         this._authenticatedUser = authenticatedUser;
-        this.authenticationService = authenticationService;
+        this._userService = userService;
     }
 
     protected override Task HandleRequirementAsync(

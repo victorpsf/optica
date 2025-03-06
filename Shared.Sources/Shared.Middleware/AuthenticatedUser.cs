@@ -14,7 +14,7 @@ public class AuthenticatedUser
     private readonly HttpContext? HttpContext;
     private ClaimIdentifier? claim;
     private ISecurityConfiguration SecurityConfiguration;
-    private IAuthenticationService AuthenticationService;
+    private IUserService _userService;
     private User? user;
     
     private string? Token
@@ -54,7 +54,7 @@ public class AuthenticatedUser
             if (this.Claim is null)
                 throw new NotAuthoriazedException();
             
-            this.user = this.AuthenticationService.FindById(this.Claim.UserId);
+            this.user = this._userService.FindById(this.Claim.UserId);
             return this.user;
         }
     }
@@ -62,11 +62,11 @@ public class AuthenticatedUser
     public AuthenticatedUser(
         IHttpContextAccessor httpContextAcessor,
         ISecurityConfiguration securityConfiguration,
-        IAuthenticationService authenticationService
+        IUserService userService
     )
     {
         this.HttpContext = httpContextAcessor.HttpContext;
         this.SecurityConfiguration = securityConfiguration;
-        this.AuthenticationService = authenticationService;
+        this._userService = userService;
     }
 }

@@ -70,7 +70,8 @@ public partial class StartupCoreConfiguration
             configuration.Security
         );
         services.AddDbContext<AuthenticationDbContext>(options => options.UseNpgsql(configuration.ConnectionString));
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IAuthCodeService, AuthCodeService>();
         services.AddScoped<AuthenticatedUser>();
     }
     
