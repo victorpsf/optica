@@ -55,6 +55,19 @@ public partial class StartupCoreConfiguration
 
         services.AddScoped<IHostCache, HostCache>();
 
+        services.AddCors(options =>
+        {
+            options.AddPolicy(
+                "MyPolicy",
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                       .AllowAnyHeader()
+                       .AllowAnyMethod();
+                }
+            );
+        });
+
         this.ConfigureModule(services);
     }
 
@@ -67,6 +80,8 @@ public partial class StartupCoreConfiguration
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseMiddleware<SecurityChanelMiddleware>();
+
+        app.UseCors("MyPolicy");
 
         app.UseEndpoints(a =>
         {

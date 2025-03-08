@@ -12,14 +12,14 @@ public class AuthCodeService: AbstractService<AuthenticationDbContext, AuthCode>
     
     public AuthCode? FindById(long id)
         => this.DbSet.AsQueryable()
-            .Where(x => x.Id == id)
+            .Where(x => x.User.UserId == id)
             .ToArray()
             .FirstOrDefault();
     
     public AuthCode? FindByUser(User user)
         => this.DbSet.AsQueryable()
             .Include(a => a.User)
-            .Where(x => x.User.Id == user.Id)
+            .Where(x => x.User.UserId == user.UserId)
             .ToArray()
             .FirstOrDefault();
 
@@ -32,8 +32,10 @@ public class AuthCodeService: AbstractService<AuthenticationDbContext, AuthCode>
             code = new AuthCode()
             {
                 Code = RandomUtil.RandomString(9),
-                ExpireIn = DateTime.UtcNow.AddMinutes(4),
-                User = user
+                ExpireIn = DateTime.Now.AddMinutes(4),
+                CreatedAt = DateTime.Now,
+                User = user,
+                UserId = user.UserId
             };            
             
             this.DbSet.Add(code);
@@ -43,7 +45,7 @@ public class AuthCodeService: AbstractService<AuthenticationDbContext, AuthCode>
 
         if (code.ExpireIn < DateTime.UtcNow)
         {
-            code.ExpireIn = DateTime.UtcNow.AddMinutes(4);
+            code.ExpireIn = DateTime.Now.AddMinutes(4);
             code.Code = RandomUtil.RandomString(9);
             this.DbSet.Update(code);
             this.Context.SaveChanges();

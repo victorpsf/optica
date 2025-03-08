@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Shared.Connectors.Interfaces\Shared.Connectors.Interfaces.csproj" />
+  </ItemGroup>
+
 </Project>

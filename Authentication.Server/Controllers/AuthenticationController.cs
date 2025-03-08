@@ -1,21 +1,24 @@
-﻿using Authentication.Server.Controllers.Requests;
-using Authentication.Server.Requests;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Databases.Entities;
-using Shared.Dtos;
-using Shared.Extensions;
+using Shared.Dtos.Input.AuthenticationModules;
+using Shared.Dtos.Output;
 using Shared.Interfaces.Configurations;
 using Shared.Interfaces.Databases;
 using Shared.Libraries;
 using Shared.Models.Security;
 using Shared.Security;
 using Shared.Services;
+using Shared.Connectors.Interfaces;
+using Microsoft.AspNetCore.Cors;
+using Shared.Extensions;
+using Shared.Dtos.Output.Authentication;
 
 namespace Authentication.Server;
 
 [AllowAnonymous]
-public partial class AuthenticationController: ControllerBase
+[EnableCors("MyPolicy")]
+public partial class AuthenticationController: ControllerBase, IAuthenticationConnector<IActionResult>
 {
     private ISecurityConfiguration securityConfiguration;
     private IUserService service;
@@ -50,12 +53,12 @@ public partial class AuthenticationController: ControllerBase
             autentication.Name is null ? null : Hash.Create(HashCipherMode.SHA512).Update(autentication.Name).toBase64String()
         );
 
-        
+
         if (user is null || !user.Active) return BadRequest(new EmptyResponseDto() { Message = "Credenciais inválidas" });
-        
+
         var valid = Pbkdf2.Create(Pbkdf2Size._8192, Pbkdf2HashDerivation.HMACSHA512)
             .Verify(Binary.FromBase64(user.Password ?? string.Empty).Bytes, Binary.FromString(autentication.Password ?? string.Empty).Bytes);
-        
+
         if (!valid) return BadRequest(new EmptyResponseDto() { Message = "Credenciais inválidas" });
 
         var code = this.authCodeService.Create(user);
@@ -101,7 +104,11 @@ public partial class AuthenticationController: ControllerBase
 
         return Ok(
             Jwt.Create(securityConfiguration)
-                .Write(new ClaimIdentifier() { UserId = user.Id ?? 0 })
+                .Write(new ClaimIdentifier() { 
+                    UserId = user.UserId,
+                    Permissions = user.PermissionNames ?? new string[0],
+                    Roles = user.RoleNames ?? new string[0]
+                })
         );
     }
 }

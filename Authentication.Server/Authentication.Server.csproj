@@ -17,7 +17,8 @@
     <ProjectReference Include="..\Shared.Sources\Shared.Connectors.Interfaces\Shared.Connectors.Interfaces.csproj" />
     <ProjectReference Include="..\Shared.Sources\Shared.Connectors\Shared.Connectors.csproj" />
     <ProjectReference Include="..\Shared.Sources\Shared.Databases\Shared.Databases.csproj" />
-    <ProjectReference Include="..\Shared.Sources\Shared.Dtos\Shared.Dtos.csproj" />
+    <ProjectReference Include="..\Shared.Sources\Shared.Dtos.Input\Shared.Dtos.Input.csproj" />
+    <ProjectReference Include="..\Shared.Sources\Shared.Dtos.Output\Shared.Dtos.Output.csproj" />
     <ProjectReference Include="..\Shared.Sources\Shared.Exceptions\Shared.Exceptions.csproj" />
     <ProjectReference Include="..\Shared.Sources\Shared.Extensions\Shared.Extensions.csproj" />
     <ProjectReference Include="..\Shared.Sources\Shared.Interfaces\Shared.Interfaces.csproj" />
@@ -26,10 +27,6 @@
     <ProjectReference Include="..\Shared.Sources\Shared.Models\Shared.Models.csproj" />
     <ProjectReference Include="..\Shared.Sources\Shared.Security\Shared.Security.csproj" />
     <ProjectReference Include="..\Shared.Sources\Shared.Services\Shared.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Records\" />
   </ItemGroup>
 
 </Project>

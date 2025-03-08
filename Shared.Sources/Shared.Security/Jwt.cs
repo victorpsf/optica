@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Interfaces.Configurations;
 using Shared.Libraries;
@@ -33,8 +34,11 @@ public class Jwt
                     new SecurityTokenDescriptor()
                     {
                         Subject = new ClaimsIdentity(
-                            new Claim[]
-                            { new("uI", claim.UserId.ToString()) }
+                            new Claim[] { 
+                                new("uI", claim.UserId.ToString()),
+                                new("uR", JsonSerializer.Serialize(claim.Roles)),
+                                new("uP", JsonSerializer.Serialize(claim.Permissions))
+                            }
                         ),
                         Issuer = this.SecurityConfiguration.Issuer,
                         TokenType = TokenType,
