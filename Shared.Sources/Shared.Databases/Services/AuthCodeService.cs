@@ -43,7 +43,7 @@ public class AuthCodeService: AbstractService<AuthenticationDbContext, AuthCode>
             return code;
         }
 
-        if (code.ExpireIn < DateTime.UtcNow)
+        if (code.ExpireIn < DateTime.Now)
         {
             code.ExpireIn = DateTime.Now.AddMinutes(4);
             code.Code = RandomUtil.RandomString(9);

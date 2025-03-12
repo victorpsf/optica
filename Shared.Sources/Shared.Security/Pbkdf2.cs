@@ -1,11 +1,13 @@
 ﻿using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Shared.Interfaces;
+using Shared.Interfaces.Security;
 using Shared.Libraries;
 using Shared.Models.Security;
 
 namespace Shared.Security;
 
-public class Pbkdf2
+public class Pbkdf2: IPbkdf2
 {
     private Pbkdf2Size Size;
     private Pbkdf2HashDerivation HashDerivation;
@@ -82,13 +84,13 @@ public class Pbkdf2
         return Pbkdf2Manager.Write(salt, result).Bytes;
     }
     
-    public Binary WriteString(string value)
+    public IBinary WriteString(string value)
         => Binary.FromBytes(this.Write(Binary.FromString(value).Bytes));
     
-    public Binary WriteBase64(string value)
+    public IBinary WriteBase64(string value)
         => Binary.FromBytes(this.Write(Binary.FromBase64(value).Bytes));
     
-    public Binary WriteHex(string value)
+    public IBinary WriteHex(string value)
         => Binary.FromBytes(this.Write(Binary.FromHex(value).Bytes));
 
     public bool Verify(byte[] derived, byte[] value)

@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>21305c0d-602e-49bb-bee2-784d65a378ad</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Shared.Sources\Shared.Configuration\Shared.Configuration.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Connectors.Interfaces\Shared.Connectors.Interfaces.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Connectors\Shared.Connectors.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Databases\Shared.Databases.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Dtos.Input\Shared.Dtos.Input.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Dtos.Output\Shared.Dtos.Output.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Exceptions\Shared.Exceptions.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Extensions\Shared.Extensions.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Interfaces\Shared.Interfaces.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Libraries\Shared.Libraries.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Middleware\Shared.Middleware.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Models\Shared.Models.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Security\Shared.Security.csproj" />
+		<ProjectReference Include="..\Shared.Sources\Shared.Services\Shared.Services.csproj" />
+	</ItemGroup>
+
+</Project>

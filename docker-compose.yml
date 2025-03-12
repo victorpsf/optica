@@ -1,0 +1,32 @@
+services:
+  database:
+    container_name: database_optica
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./scripts/sql/init.sql:/docker-entrypoint-initdb.d/1_init.sql
+      - ./scripts/sql/seed.sql:/docker-entrypoint-initdb.d/1_seed.sql
+    env_file:
+      - ./scripts/env/prod.database.env
+    networks:
+      - app-network
+
+  authentication:
+    container_name: authentication_server
+    image: authentication-server
+    build:
+      context: .
+      dockerfile: DockerFile.Authentication
+    env_file:
+      - ./scripts/env/prod.authentication.env
+    ports:
+      - 80:8080
+    networks:
+      - app-network
+    depends_on:
+      - database
+
+networks:
+  app-network:
+    external: true

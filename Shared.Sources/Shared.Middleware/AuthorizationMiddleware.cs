@@ -21,14 +21,16 @@ public class AuthorizationMiddleware: AuthorizationHandler<AuthorizationRequirem
     ) {
         try
         {
-            // [TODO]: ADICIONAR VERIFICAÇÃO DE PERMISSÕES DO USUÁRIO
-            context.Succeed(requirement);
+            if (
+                this._authenticatedUser.User is not null &&
+                this._authenticatedUser.User.PermissionNames.Any(a => a.ToUpperInvariant() == requirement.Permission.ToUpperInvariant())
+            ) context.Succeed(requirement);
+            
+            else throw new Exception("Unauthorized");
         }
 
-        catch (Exception e)
-        {
-            context.Fail();
-        }
+        catch
+        { context.Fail(); }
         
         return Task.CompletedTask;
     }

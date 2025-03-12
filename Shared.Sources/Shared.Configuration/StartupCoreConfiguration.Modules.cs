@@ -8,7 +8,7 @@ using Shared.Interfaces.Configurations;
 using Shared.Interfaces.Databases;
 using Shared.Libraries;
 using Shared.Middleware;
-using Shared.Models.Configurations;
+using Shared.Configuration.Configurations;
 using Shared.Models.Service.Modules;
 using Microsoft.EntityFrameworkCore;
 using Shared.Models;
@@ -64,7 +64,7 @@ public partial class StartupCoreConfiguration
     {
         var configuration = AuthenticationConfiguration.GetConfiguration(this.Configuration);
 
-        services.AddSingleton(configuration);
+        services.AddSingleton<IAuthenticationConfiguration>(configuration);
         this.ConfigureSecurity(
             services, 
             configuration.Security
@@ -83,7 +83,7 @@ public partial class StartupCoreConfiguration
             services, 
             configuration.Security
         );
-        // services.AddDbContext<EnterpriseDbContext>(options => options.UseMySQL(configuration.ConnectionString));
+        // services.AddDbContext<EnterpriseDbContext>(options => options.UseNpgsql(configuration.ConnectionString));
     }
 
     protected void ConfigureFinancial(IServiceCollection services)
@@ -94,18 +94,18 @@ public partial class StartupCoreConfiguration
             services, 
             configuration.Security
         );
-        // services.AddDbContext<FinancialDbContext>(options => options.UseMySQL(configuration.ConnectionString));
+        // services.AddDbContext<FinancialDbContext>(options => options.UseNpgsql(configuration.ConnectionString));
     }
-    
+
     protected void ConfigurePersonal(IServiceCollection services)
     {
         var configuration = PersonalConfiguration.GetConfiguration(this.Configuration);
-        services.AddSingleton(configuration);
+        services.AddSingleton<IPersonalConfiguration>(configuration);
         this.ConfigureSecurity(
             services, 
             configuration.Security
         );
-        // services.AddDbContext<FinancialDbContext>(options => options.UseMySQL(configuration.ConnectionString));
+        services.AddDbContext<PersonDbContext>(options => options.UseNpgsql(configuration.ConnectionString));
     }
 
     protected void ConfigureModule(IServiceCollection services)

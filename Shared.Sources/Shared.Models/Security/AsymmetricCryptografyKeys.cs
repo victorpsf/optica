@@ -1,6 +1,8 @@
-﻿namespace Shared.Models.Security;
+﻿using Shared.Interfaces.Security;
 
-public class AsymmetricCryptografyKeys
+namespace Shared.Models.Security;
+
+public class AsymmetricCryptografyKeys: IAsymmetricCryptografyKeys
 {
     public byte[] PrivateKey { get; set; }
     public byte[] PublicKey { get; set; }

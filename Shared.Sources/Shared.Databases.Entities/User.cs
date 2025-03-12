@@ -37,6 +37,8 @@ public class User
 
     public List<UserRole> Roles { get; set; }
 
+    public List<UserEnterprise> UserEnterprises { get; set; }
+
     public string[] PermissionNames
     {
         get

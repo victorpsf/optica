@@ -6,5 +6,5 @@ public class SecurityChanel
     public byte[] ClientPublicKey { get; set; }
     public byte[] ServerPublicKey { get; set; }
     public byte[] ServerPrivateKey { get; set; }
-    public DateTime LastUsaged { get; set; } = DateTime.UtcNow;
+    public DateTime LastUsaged { get; set; } = DateTime.Now;
 }

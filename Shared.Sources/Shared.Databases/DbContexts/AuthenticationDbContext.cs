@@ -1,18 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Databases.Entities;
 using Shared.Databases.Interceptors;
-using Shared.Models.Configurations;
+using Shared.Interfaces.Configurations;
 
 namespace Shared.Databases.DbContexts;
 
 public class AuthenticationDbContext: DbContext
 {
-    private AuthenticationConfiguration authenticationConfiguration;
+    private IAuthenticationConfiguration authenticationConfiguration;
     public DbSet<User> Users { get; set; }
     public DbSet<AuthCode> AuthCodes { get; set; }
 
     public AuthenticationDbContext(
-        AuthenticationConfiguration configuration,
+        IAuthenticationConfiguration configuration,
         DbContextOptions<AuthenticationDbContext> options
     ): base(options) {
         this.authenticationConfiguration = configuration;
@@ -20,9 +20,10 @@ public class AuthenticationDbContext: DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        //AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         optionsBuilder.UseNpgsql(authenticationConfiguration.ConnectionString);
-        optionsBuilder.AddInterceptors(new UtcSaveChangesInterceptor());
+//#if DEBUG
+//        optionsBuilder.AddInterceptors(new UtcSaveChangesInterceptor());
+//#endif
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,6 +46,23 @@ public class AuthenticationDbContext: DbContext
             entity.HasMany(e => e.Roles)
                 .WithOne(e => e.User)
                 .HasForeignKey(e => e.UserId);
+
+            entity.HasMany(e => e.UserEnterprises)
+                .WithOne(e => e.User)
+                .HasForeignKey(e => e.UserId);
+        });
+
+        modelBuilder.Entity<Enterprise>(entity =>
+        {
+            entity.HasKey(e => e.EnterpriseId);
+            entity.Property(e => e.Name).IsRequired();
+            entity.Property(e => e.Active).IsRequired().HasDefaultValue(true);
+            entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("now()");
+            entity.Property(e => e.DeletedAt);
+
+            entity.HasMany(e => e.UserEnterprises)
+                .WithOne(e => e.Enterprise)
+                .HasForeignKey(e => e.EntepriseId);
         });
 
         modelBuilder.Entity<AuthCode>(entity =>
@@ -110,6 +128,19 @@ public class AuthenticationDbContext: DbContext
             entity.HasOne(e => e.Role)
                 .WithMany(e => e.UserRoles)
                 .HasForeignKey(e => e.RoleId);
+        });
+
+        modelBuilder.Entity<UserEnterprise>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.EntepriseId });
+
+            entity.HasOne(e => e.User)
+                .WithMany(e => e.UserEnterprises)
+                .HasForeignKey(e => e.UserId);
+
+            entity.HasOne(e => e.Enterprise)
+                .WithMany(e => e.UserEnterprises)
+                .HasForeignKey(e => e.EntepriseId);
         });
     }
 }

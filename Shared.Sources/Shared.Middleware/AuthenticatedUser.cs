@@ -4,6 +4,7 @@ using Shared.Exceptions;
 using Shared.Extensions;
 using Shared.Interfaces.Configurations;
 using Shared.Interfaces.Databases;
+using Shared.Interfaces.Security;
 using Shared.Models.Security;
 using Shared.Security;
 
@@ -12,7 +13,7 @@ namespace Shared.Middleware;
 public class AuthenticatedUser
 {
     private readonly HttpContext? HttpContext;
-    private ClaimIdentifier? claim;
+    private IClaimIdentifier? claim;
     private ISecurityConfiguration SecurityConfiguration;
     private IUserService _userService;
     private User? user;
@@ -30,7 +31,7 @@ public class AuthenticatedUser
         } 
     }
     
-    public ClaimIdentifier? Claim
+    public IClaimIdentifier? Claim
     {
         get
         {

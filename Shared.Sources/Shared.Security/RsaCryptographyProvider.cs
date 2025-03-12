@@ -1,8 +1,9 @@
-﻿using System.Security.Cryptography;
+﻿using Shared.Interfaces.Security;
+using System.Security.Cryptography;
 
 namespace Shared.Security;
 
-public class RsaCryptographyProvider
+public class RsaCryptographyProvider: IRsaCryptographyProvider
 {
     public byte[] Key { get; set; }
     private bool isPublic;

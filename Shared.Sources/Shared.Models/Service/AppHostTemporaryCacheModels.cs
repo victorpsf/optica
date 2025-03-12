@@ -27,7 +27,7 @@ public class AppHostTemporaryCacheModels
 
         public void Set(string key, string value, int secconds)
         {
-            var toAdd = new TemporaryDataCache { data = value, secconds = secconds, now = DateTime.UtcNow };
+            var toAdd = new TemporaryDataCache { data = value, secconds = secconds, now = DateTime.Now };
 
             if (!this.data.ContainsKey(key.ToUpperInvariant()))
             {

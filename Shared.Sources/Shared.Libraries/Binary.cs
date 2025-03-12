@@ -1,6 +1,8 @@
-﻿namespace Shared.Libraries;
+﻿using Shared.Interfaces;
 
-public class Binary
+namespace Shared.Libraries;
+
+public class Binary: IBinary
 {
     public byte[] Bytes { get; private set; }
 
@@ -9,7 +11,7 @@ public class Binary
         this.Bytes = bytes;
     }
 
-    public Binary Copy()
+    public IBinary Copy()
     {
         byte[] bytes = new byte[this.Bytes.Length];
         Array.Copy(this.Bytes, bytes, bytes.Length);

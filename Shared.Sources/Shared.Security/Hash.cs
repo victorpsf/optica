@@ -1,10 +1,12 @@
 ﻿using System.Security.Cryptography;
+using Shared.Interfaces;
+using Shared.Interfaces.Security;
 using Shared.Libraries;
 using Shared.Models.Security;
 
 namespace Shared.Security;
 
-public class Hash
+public class Hash: IHash
 {
     private HashCipherMode mode;
     
@@ -25,6 +27,6 @@ public class Hash
     public byte[] Update(byte[] value)
         => this.GetAlgorithm().ComputeHash(value);
 
-    public Binary Update(string value)
+    public IBinary Update(string value)
         => Binary.FromBytes(this.Update(Binary.FromString(value).Bytes));
 }

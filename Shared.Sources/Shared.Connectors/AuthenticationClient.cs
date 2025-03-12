@@ -1,4 +1,5 @@
 ﻿using Shared.Connectors.Interfaces;
+using Shared.Dtos.Input;
 using Shared.Dtos.Input.AuthenticationModules;
 
 namespace Shared.Connectors;
@@ -23,6 +24,12 @@ public class AuthenticationClient: IAuthenticationConnector<object>
 
     public async Task<object> Code(
         AuthenticationCode authentication
+    ) {
+        return new { };
+    }
+
+    public async Task<object> Enterprises(
+        AuthenticationName authenticationName
     ) {
         return new { };
     }

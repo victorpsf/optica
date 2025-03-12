@@ -1,0 +1,1 @@
+docker build --file ./DockerFile.Authentication -t authentication-server .

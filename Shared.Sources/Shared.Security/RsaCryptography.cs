@@ -1,13 +1,14 @@
 ﻿using System.Security.Cryptography;
+using Shared.Interfaces.Security;
 using Shared.Models.Security;
 
 namespace Shared.Security;
 
-public class RsaCryptography
+public class RsaCryptography: IRsaCryptography
 {
-    public AsymmetricCryptografyKeys Keys { get; set; }
+    public IAsymmetricCryptografyKeys Keys { get; set; }
 
-    private RsaCryptography(AsymmetricCryptografyKeys keys)
+    private RsaCryptography(IAsymmetricCryptografyKeys keys)
     { this.Keys = keys; }
 
     private static int KeySize(RsaCryptographySize size) => size switch
@@ -19,30 +20,28 @@ public class RsaCryptography
         _ => throw new NotImplementedException(),
     };
     
-    public static AsymmetricCryptografyKeys GenerateKeys(RsaCryptographySize size)
+    public static IAsymmetricCryptografyKeys GenerateKeys(RsaCryptographySize size)
     {
         using var rsa = RSA.Create(KeySize(size));
 
-        return new()
+        return new AsymmetricCryptografyKeys()
         {
             PrivateKey = rsa.ExportPkcs8PrivateKey(),
             PublicKey = rsa.ExportSubjectPublicKeyInfo()
         };
     }
 
-    public RsaCryptographyProvider getPublicProvider()
-        => new(this.Keys.PublicKey, true);
+    public IRsaCryptographyProvider getPublicProvider()
+        => new RsaCryptographyProvider(this.Keys.PublicKey, true);
     
-    public RsaCryptographyProvider getPrivateProvider()
-        => new(this.Keys.PrivateKey, false);
+    public IRsaCryptographyProvider getPrivateProvider()
+        => new RsaCryptographyProvider(this.Keys.PrivateKey, false);
 
-    public static RsaCryptography Create(AsymmetricCryptografyKeys keys)
-        => new(keys);
+    public static IRsaCryptography Create(IAsymmetricCryptografyKeys keys)
+        => new RsaCryptography(keys);
     
-    public static RsaCryptography Create(RsaCryptographySize size)
+    public static IRsaCryptography Create(RsaCryptographySize size)
         => Create(
             GenerateKeys(size)
         );
-    
-    
 }

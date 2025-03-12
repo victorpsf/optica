@@ -1,0 +1,39 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+
+EXPOSE 8080
+# EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+WORKDIR /src
+
+COPY Shared.Sources/Shared.Connectors.Interfaces/Shared.Connectors.Interfaces.csproj    Shared.Sources/Shared.Connectors.Interfaces/Shared.Connectors.Interfaces.csproj
+COPY Shared.Sources/Shared.Configuration/Shared.Configuration.csproj                    Shared.Sources/Shared.Configuration/Shared.Configuration.csproj
+COPY Shared.Sources/Shared.Connectors/Shared.Connectors.csproj                          Shared.Sources/Shared.Connectors/Shared.Connectors.csproj
+COPY Shared.Sources/Shared.Databases/Shared.Databases.csproj                            Shared.Sources/Shared.Databases/Shared.Databases.csproj
+COPY Shared.Sources/Shared.Dtos.Input/Shared.Dtos.Input.csproj                          Shared.Sources/Shared.Dtos.Input/Shared.Dtos.Input.csproj
+COPY Shared.Sources/Shared.Dtos.Output/Shared.Dtos.Output.csproj                        Shared.Sources/Shared.Dtos.Output/Shared.Dtos.Output.csproj
+COPY Shared.Sources/Shared.Exceptions/Shared.Exceptions.csproj                          Shared.Sources/Shared.Exceptions/Shared.Exceptions.csproj
+COPY Shared.Sources/Shared.Extensions/Shared.Extensions.csproj                          Shared.Sources/Shared.Extensions/Shared.Extensions.csproj
+COPY Shared.Sources/Shared.Interfaces/Shared.Interfaces.csproj                          Shared.Sources/Shared.Interfaces/Shared.Interfaces.csproj
+COPY Shared.Sources/Shared.Libraries/Shared.Libraries.csproj                            Shared.Sources/Shared.Libraries/Shared.Libraries.csproj
+COPY Shared.Sources/Shared.Middleware/Shared.Middleware.csproj                          Shared.Sources/Shared.Middleware/Shared.Middleware.csproj
+COPY Shared.Sources/Shared.Models/Shared.Models.csproj                                  Shared.Sources/Shared.Models/Shared.Models.csproj
+COPY Shared.Sources/Shared.Security/Shared.Security.csproj                              Shared.Sources/Shared.Security/Shared.Security.csproj
+COPY Shared.Sources/Shared.Services/Shared.Services.csproj                              Shared.Sources/Shared.Services/Shared.Services.csproj
+COPY Authentication.Server/Authentication.Server.csproj                                 Authentication.Server/Authentication.Server.csproj
+
+RUN dotnet restore "Authentication.Server/Authentication.Server.csproj"
+
+COPY . .
+WORKDIR "/src/Authentication.Server"
+RUN dotnet build "Authentication.Server.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "Authentication.Server.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Authentication.Server.dll"]

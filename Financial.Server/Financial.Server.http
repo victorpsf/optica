@@ -1,4 +1,4 @@
-@Financial.Server_HostAddress = http://localhost:5292
+@Financial.Server_HostAddress = http://localhost:5016
 
 GET {{Financial.Server_HostAddress}}/weatherforecast/
 Accept: application/json

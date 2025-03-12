@@ -1,4 +1,6 @@
-﻿using Shared.Dtos.Input.AuthenticationModules;
+﻿using Microsoft.AspNetCore.Mvc;
+using Shared.Dtos.Input;
+using Shared.Dtos.Input.AuthenticationModules;
 
 namespace Shared.Connectors.Interfaces;
 
@@ -10,5 +12,9 @@ public interface IAuthenticationConnector<T>
 
     Task<T> Code(
         AuthenticationCode authentication
+    );
+
+    Task<T> Enterprises(
+        AuthenticationName authenticationName
     );
 }

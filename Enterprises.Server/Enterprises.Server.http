@@ -1,6 +1,0 @@
-@Enterprises.Server_HostAddress = http://localhost:5030
-
-GET {{Enterprises.Server_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -9,7 +9,7 @@ using Shared.Interfaces.Services;
 using Shared.Libraries;
 using Shared.Middleware;
 using Shared.Models.Annotation;
-using Shared.Models.Configurations;
+using Shared.Configuration.Configurations;
 using Shared.Models.Security;
 using Shared.Models.Service.Modules;
 using Shared.Security;
@@ -26,6 +26,7 @@ public partial class StartupCoreConfiguration
         this.Configuration = configuration;
         this.Module = module;
         this.Annotation = module.getAnnotation<ModuleAnnotation>();
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -50,7 +51,7 @@ public partial class StartupCoreConfiguration
         services.AddSingleton<SmtpService>(new SmtpService(smtpConfiguration));
         services.AddScoped<HostCache>();
 
-        JobFactory.CreateJob(() => securityChanels.RemoveChanels(DateTime.UtcNow), 3600000);
+        JobFactory.CreateJob(() => securityChanels.RemoveChanels(DateTime.Now), 3600000);
         JobFactory.CreateJob(() => temporaryCache.UnsetValue(), 10000);
 
         services.AddScoped<IHostCache, HostCache>();

@@ -1,5 +1,6 @@
-import { JSX } from "react";
+import React, { JSX } from "react";
 import FloatLabel from "../FloatLabel";
+import { sleep } from "../../lib/Thread";
 
 export interface IStringFieldProps {
     label?: string;
@@ -9,9 +10,13 @@ export interface IStringFieldProps {
     onChange: (value?: string) => void;
 
     handleMainClassName?: () => string;
+    sleepTime?: number;
+    onSleep?: (v1?: string, v2?: string) => void;
 }
 
 const StringField = function (props: IStringFieldProps): JSX.Element {
+    const ref = React.useRef<HTMLInputElement | null>(null);
+
     const mainClassName  = function (): string {
         if (props.handleMainClassName)
             return props.handleMainClassName();
@@ -24,15 +29,33 @@ const StringField = function (props: IStringFieldProps): JSX.Element {
             <div
                 className={mainClassName()}
             >
-                {props.label && <FloatLabel value={props.label} has={(props.value?.length || 0) > 0} />}
+                {props.label && (
+                    <FloatLabel 
+                        value={props.label} 
+                        has={(props.value?.length || 0) > 0} 
+                        onPress={() => {
+                            ref.current?.click();
+                            ref.current?.focus();
+                        }}
+                    />
+                )}
 
-                <input 
+                <input
+                    ref={ref}
                     className="outline-[0px] w-full h-full p-2" 
                     placeholder={props.placeholder} 
                     type="text" 
                     value={props.value}
                     maxLength={props.max}
-                    onChange={(ev) => props.onChange(ev.target.value)} 
+                    onChange={async (ev) => {
+                        const value = ev.target.value;
+                        props.onChange(value);
+
+                        if (props.onSleep) {
+                            await sleep(props.sleepTime || 0.5)
+                            props.onSleep(value, ev.target.value);
+                        }
+                    }} 
                 />
             </div>
             

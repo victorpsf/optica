@@ -1,6 +1,6 @@
 import { ENV } from "../lib/ENV";
 import { Client, IClient } from "./Client";
-import { AuthenticationCodeDto, AuthenticationDto, AuthTokenDto } from "./interface/Authentication";
+import { AuthenticationCodeDto, AuthenticationDto, AuthenticationNameDto, AuthTokenDto, EnterpriseDto } from "./interface/Authentication";
 import { EmptyReponse } from "./interface/RequestDto";
 
 class AuthenticationService {
@@ -16,6 +16,10 @@ class AuthenticationService {
 
     async code(data: AuthenticationCodeDto): Promise<AuthTokenDto> {
         return await this.client.post<AuthTokenDto>('/auth/Authentication/Code', data);
+    }
+
+    async enterprises(data: AuthenticationNameDto): Promise<EnterpriseDto[]> {
+        return await this.client.post<EnterpriseDto[]>('/auth/Authentication/Enterprises', data);
     }
 }
 

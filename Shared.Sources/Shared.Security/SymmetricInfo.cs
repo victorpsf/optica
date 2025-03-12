@@ -2,6 +2,6 @@
 
 public class SymmetricInfo
 {
-    public int KeySyze { get; set; }
+    public int KeySize { get; set; }
     public int BlockSize { get; set; }
 }

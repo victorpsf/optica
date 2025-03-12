@@ -3,41 +3,43 @@ using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Interfaces.Configurations;
+using Shared.Interfaces.Security;
 using Shared.Libraries;
 using Shared.Models.Security;
 
 namespace Shared.Security;
 
-public class Jwt
+public class Jwt: IJwt
 {
     private ISecurityConfiguration SecurityConfiguration;
     private static string TokenType = "Bearer";
 
     public Jwt(ISecurityConfiguration securityConfiguration)
         => this.SecurityConfiguration = securityConfiguration;
-    
-    public static Jwt Create(ISecurityConfiguration securityConfiguration) 
+
+    public static Jwt Create(ISecurityConfiguration securityConfiguration)
         => new(securityConfiguration);
 
     public SymmetricSecurityKey SymmetricSecurityKey { get => new(Binary.FromBase64(this.SecurityConfiguration.TokenSecret).Bytes); }
     public SigningCredentials SigningCredentials { get => new(this.SymmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature); }
 
-    public AuthToken Write(ClaimIdentifier claim)
+    public IAuthToken Write(IClaimIdentifier claim)
     {
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
         var handler = new JwtSecurityTokenHandler();
 
-        return new()
+        return new AuthToken()
         {
             Token = handler.WriteToken(
                 handler.CreateToken(
                     new SecurityTokenDescriptor()
                     {
                         Subject = new ClaimsIdentity(
-                            new Claim[] { 
+                            new Claim[] {
                                 new("uI", claim.UserId.ToString()),
                                 new("uR", JsonSerializer.Serialize(claim.Roles)),
-                                new("uP", JsonSerializer.Serialize(claim.Permissions))
+                                new("uP", JsonSerializer.Serialize(claim.Permissions)),
+                                new("uE", claim.EnterpriseId.ToString())
                             }
                         ),
                         Issuer = this.SecurityConfiguration.Issuer,
@@ -50,13 +52,13 @@ public class Jwt
         };
     }
 
-    public ClaimIdentifier Read(string token)
+    public IClaimIdentifier Read(string token)
     {
         try
         {
             (new JwtSecurityTokenHandler())
                 .ValidateToken(
-                    token, 
+                    token,
                     new TokenValidationParameters
                     {
                         ValidIssuer = this.SecurityConfiguration.Issuer,
@@ -65,7 +67,7 @@ public class Jwt
                         IssuerSigningKey = this.SymmetricSecurityKey,
                         ValidateIssuerSigningKey = true,
                         ValidateLifetime = true
-                    }, 
+                    },
                     out SecurityToken validatedToken
                 );
 

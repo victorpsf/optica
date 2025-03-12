@@ -15,6 +15,12 @@ public class UserService: AbstractService<AuthenticationDbContext, User>, IUserS
     public User? FindById(long id)
         => this.DbSet.AsQueryable()
             .Where(x => x.UserId == id)
+             .Include(a => a.Roles)
+                .ThenInclude(a => a.Role)
+                .ThenInclude(a => a.RolePermissions)
+                .ThenInclude(a => a.Permission)
+            .Include(a => a.UserEnterprises)
+                .ThenInclude(a => a.Enterprise)
             .ToArray()
             .FirstOrDefault();
 
@@ -32,11 +38,16 @@ public class UserService: AbstractService<AuthenticationDbContext, User>, IUserS
         if (!name.IsNullOrEmpty())
             queryable = queryable.Where(x => x.Name == name);
 
+        queryable = queryable.Where(x => x.UserEnterprises.Any(b => b.Enterprise.Active == true));
+        queryable = queryable.Where(x => x.UserEnterprises.Any(b => b.Enterprise.DeletedAt == null));
+
         return queryable
             .Include(a => a.Roles)
                 .ThenInclude(a => a.Role)
                 .ThenInclude(a => a.RolePermissions)
                 .ThenInclude(a => a.Permission)
+            .Include(a => a.UserEnterprises)
+                .ThenInclude(a => a.Enterprise)
             .ToList()
             .FirstOrDefault();
     }
