@@ -65,10 +65,6 @@ public partial class StartupCoreConfiguration
         var configuration = AuthenticationConfiguration.GetConfiguration(this.Configuration);
 
         services.AddSingleton<IAuthenticationConfiguration>(configuration);
-        this.ConfigureSecurity(
-            services, 
-            configuration.Security
-        );
         services.AddDbContext<AuthenticationDbContext>(options => options.UseNpgsql(configuration.ConnectionString));
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthCodeService, AuthCodeService>();
@@ -79,10 +75,6 @@ public partial class StartupCoreConfiguration
     {
         var configuration = EnterpriseConfiguration.GetConfiguration(this.Configuration);
         services.AddSingleton(configuration);
-        this.ConfigureSecurity(
-            services, 
-            configuration.Security
-        );
         // services.AddDbContext<EnterpriseDbContext>(options => options.UseNpgsql(configuration.ConnectionString));
     }
 
@@ -90,10 +82,6 @@ public partial class StartupCoreConfiguration
     {
         var configuration = FinancialConfiguration.GetConfiguration(this.Configuration);
         services.AddSingleton(configuration);
-        this.ConfigureSecurity(
-            services, 
-            configuration.Security
-        );
         // services.AddDbContext<FinancialDbContext>(options => options.UseNpgsql(configuration.ConnectionString));
     }
 
@@ -101,15 +89,12 @@ public partial class StartupCoreConfiguration
     {
         var configuration = PersonalConfiguration.GetConfiguration(this.Configuration);
         services.AddSingleton<IPersonalConfiguration>(configuration);
-        this.ConfigureSecurity(
-            services, 
-            configuration.Security
-        );
         services.AddDbContext<PersonDbContext>(options => options.UseNpgsql(configuration.ConnectionString));
     }
 
     protected void ConfigureModule(IServiceCollection services)
     {
+        this.ConfigureSecurity(services, SecurityConfiguration.GetConfiguration(this.Configuration));
         this.ConfigureAuthentication(services);
         
         switch (this.Module) {

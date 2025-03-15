@@ -10,6 +10,7 @@ using Shared.Libraries;
 using Shared.Middleware;
 using Shared.Models.Annotation;
 using Shared.Configuration.Configurations;
+using Shared.Configuration.Converter;
 using Shared.Models.Security;
 using Shared.Models.Service.Modules;
 using Shared.Security;
@@ -34,11 +35,13 @@ public partial class StartupCoreConfiguration
         if (this.Annotation is null)
             throw new ApplicationException("DON'T HAVE ANNOTATED THE CONFIGURATION FILE");
 
-        services.AddControllers();
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<RequestConverter>();
+        });
         services.AddAuthentication();
         services.AddAuthorization();
         services.AddHttpContextAccessor();
-        
 
         // SECURITY CHANEL CONFIGURATION
         // AS CHAMADAS ENTRE SEVIÇO VÃO UTILIZAR RSA
@@ -48,7 +51,7 @@ public partial class StartupCoreConfiguration
 
         services.AddSingleton(securityChanels);
         services.AddSingleton(temporaryCache);
-        services.AddSingleton<SmtpService>(new SmtpService(smtpConfiguration));
+        services.AddSingleton(new SmtpService(smtpConfiguration));
         services.AddScoped<HostCache>();
 
         JobFactory.CreateJob(() => securityChanels.RemoveChanels(DateTime.Now), 3600000);
@@ -72,7 +75,7 @@ public partial class StartupCoreConfiguration
         this.ConfigureModule(services);
     }
 
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    public void Configure(IApplicationBuilder app)
     {
         if (this.Annotation is null)
             throw new ApplicationException("DON'T HAVE ANNOTATION MODULE");
@@ -92,10 +95,10 @@ public partial class StartupCoreConfiguration
                 {
                     using var reader = new StreamReader(context.Request.Body);
                     var body = await reader.ReadToEndAsync();
-
+            
                     var clientPublicKey = Binary.FromBase64(body).Bytes;
                     var chanel = chanels.SetChanel(context.Request.Host.Host, clientPublicKey);
-
+            
                     var rsa = RsaCryptography.Create(new AsymmetricCryptografyKeys()
                     {
                         PublicKey = clientPublicKey,
@@ -109,8 +112,8 @@ public partial class StartupCoreConfiguration
                         test = rsa.getPublicProvider().Encrypt(Binary.FromString("ping").Bytes)
                     });
                 }
-
-                catch (Exception ex)
+            
+                catch
                 {
                     chanels.RemoveChanel(context.Request.Host.Host);
                     context.Response.StatusCode = 500;

@@ -6,20 +6,11 @@ namespace Shared.Configuration.Configurations;
 public class PersonalConfiguration: ModuleBaseConfiguration, IPersonalConfiguration
 {
     public PersonalConfiguration(
-        IManagerConfiguration manager,
-        ISecurityConfiguration security
-    ): base(manager, security) { }
+        IManagerConfiguration manager
+    ): base(manager) { }
 
     public static PersonalConfiguration GetConfiguration(IConfiguration configuration)
-    {
-        var manager = ManagerConfiguration.GetInstance(configuration);
-        var security = SecurityConfiguration.GetInstance(configuration);
-        
-        return new PersonalConfiguration(
-            manager, 
-            security
-        );
-    }
+    => new(ManagerConfiguration.GetInstance(configuration));
 
     public string ConnectionString
     {

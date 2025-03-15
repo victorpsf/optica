@@ -9,11 +9,10 @@ public class ModuleBaseConfiguration: IModuleBaseConfiguration
     public ISecurityConfiguration Security { get; private set; }
 
     public ModuleBaseConfiguration(
-        IManagerConfiguration manager,
-        ISecurityConfiguration security
+        IManagerConfiguration manager
     )
     {
         this.Manager = manager;
-        this.Security = security;
+        this.Security = SecurityConfiguration.GetConfiguration(manager);
     }
 }

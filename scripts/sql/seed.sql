@@ -20,11 +20,14 @@ values
 insert into public.permissions
     ("name")
 values 
+    ('AUTHENTICACAO_AUTORIZACAO'),
     ('AUTHENTICACAO_VISUALIZAR'),
     ('AUTHENTICACAO_MANTER'),
     ('AUTHENTICACAO_VINCULACAO'),
+    ('EMPRESA_AUTORIZACAO'),
     ('EMPRESA_VISUALIZAR'),
     ('EMPRESA_MANTER'),
+    ('PESSOAL_AUTORIZACAO'),
     ('PESSOAL_VISUALIZAR'),
     ('PESSOAL_MANTER');
 

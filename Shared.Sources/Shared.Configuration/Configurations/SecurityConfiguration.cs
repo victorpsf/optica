@@ -12,11 +12,11 @@ public class SecurityConfiguration: ISecurityConfiguration
     public SecurityConfiguration(IManagerConfiguration manager)
         => this.Manager = manager;
 
-    public static ISecurityConfiguration GetInstance(IConfiguration configuration)
-        => new SecurityConfiguration(ManagerConfiguration.GetInstance(configuration));
-
-    public static ISecurityConfiguration GetInstance(IManagerConfiguration manager)
-        => new SecurityConfiguration(manager);
+    public static SecurityConfiguration GetConfiguration(IManagerConfiguration manager)
+        => new(manager);
+    
+    public static SecurityConfiguration GetConfiguration(IConfiguration configuration)
+        => GetConfiguration(ManagerConfiguration.GetInstance(configuration));
 
     public string TokenSecret
     {

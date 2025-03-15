@@ -10,17 +10,22 @@ public class Authorization
         return authorizations;
     }
     
-    public enum AuthenticationPermission {
+    public enum AuthenticationPermission 
+    {
+        AUTHENTICACAO_AUTORIZACAO,
         AUTHENTICACAO_VISUALIZAR,
         AUTHENTICACAO_MANTER,
         AUTHENTICACAO_VINCULACAO
     }
     public enum EnterprisePermission
     {
+        EMPRESA_AUTORIZACAO,
         EMPRESA_VISUALIZAR,
         EMPRESA_MANTER
     }
-    public enum PersonalPermission {
+    public enum PersonalPermission 
+    {
+        PESSOAL_AUTORIZACAO,
         PESSOAL_VISUALIZAR,
         PESSOAL_MANTER
     }

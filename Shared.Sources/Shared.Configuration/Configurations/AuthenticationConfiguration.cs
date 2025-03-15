@@ -7,7 +7,7 @@ public class AuthenticationConfiguration: ModuleBaseConfiguration, IAuthenticati
 {
     public AuthenticationConfiguration(
         IConfiguration configuration
-    ): base(ManagerConfiguration.GetInstance(configuration), SecurityConfiguration.GetInstance(configuration)) { }
+    ): base(ManagerConfiguration.GetInstance(configuration)) { }
 
     public static AuthenticationConfiguration GetConfiguration(IConfiguration configuration)
         => new(configuration);
